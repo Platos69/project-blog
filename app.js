@@ -29,7 +29,7 @@
         }).catch((erro) => {
             console.log(`[BLOGAPP] Erro ao conectar no Banco!\n Erro: ${erro}`)
         })
-            //Public
+    //Public
         app.use(express.static(path.join(__dirname + "/public")))
 
 //ROTAS
