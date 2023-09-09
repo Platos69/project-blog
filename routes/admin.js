@@ -21,17 +21,36 @@ router.get('/categorias/add', (req, res) => {
 })
 
 router.post('/categorias/nova', (req, res) => {
-    const novaCategoria = {
-        nome: req.body.nome,
-        slug: req.body.slug
+    
+    var erros = []
+
+    if(!req.body.nome || typeof req.body.nome == undefined || typeof req.body.nome == null){
+        erros.push({texto: "Nome inválido"})
     }
 
-    new Categoria(novaCategoria).save().then(() => {
-        console.log('[BLOGAPP] Categoria criada com sucesso')
-    }).catch((erro) => {
-        console.log(`[BLOGAPP] Falha na criação da categoria!\n ${erro}`)
-    })
-})
+    if(!req.body.slug || typeof req.body.slug == undefined || typeof req.body.slug == null){
+        erros.push({texto: "Categoria inválida"})
+    }
 
+    if (req.body.nome.length < 2) {
+        erros.push({texto:"O nome da categoria muito pequeno"})
+    }
+
+    if(erros.length > 0){
+        res.render('admin/addcategorias', {erros: erros})
+    } else {
+        const novaCategoria = {
+            nome: req.body.nome,
+            slug: req.body.slug
+        }
+    
+        new Categoria(novaCategoria).save().then(() => {
+            req.flash('success_msg', 'Categoria criada com sucesso!')
+            res.redirect('/admin/categorias')
+        }).catch((erro) => {
+            req.flash('error_msg', 'Falha na criação da categoria!')
+        })
+    }    
+})
 
 module.exports = router
