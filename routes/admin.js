@@ -97,8 +97,18 @@ router.post("/categorias/edit", (req, res) => {
             })
         }
     }).catch((erro) => {
-        req.flash("error_msg", `Erro ao editar a categoria\nErro: ${erro}`)
+        req.flash("error_msg", `Erro ao editar a categoria`)
         res.redirect("/admin/categorias")
+    })
+})
+
+router.post('/categorias/deletar', (req, res) => {
+    Categoria.deleteOne({_id: req.body.id}).then(() => {
+        req.flash('success_msg', 'Categoria deletada com sucesso')
+        res.redirect('/admin/categorias')
+    }).catch((erro) => {
+        req.flash('error_msg', 'Falha na exclusão da categoria')
+        res.redirect('/admin/categorias')
     })
 })
 
