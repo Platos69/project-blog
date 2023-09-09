@@ -7,7 +7,7 @@ const Postagem = new mongoose.Schema({
         required: true
     },
     slug: {
-        type: Text,
+        type: String,
         required: true
     },
     descricao: {

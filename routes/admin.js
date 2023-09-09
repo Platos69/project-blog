@@ -3,6 +3,8 @@ const router = express.Router()
 const mongoose = require('mongoose')
 require('../models/Categoria')
 const Categoria = mongoose.model('categorias')
+require('../models/Postagem')
+const Postagem = mongoose.model('postagens')
 
 //ROTAS
 
@@ -30,19 +32,19 @@ const Categoria = mongoose.model('categorias')
         var erros = []
 
         if (!req.body.nome || typeof req.body.nome == undefined || typeof req.body.nome == null) {
-            erros.push({ texto: "Nome inválido" })
-        }
-
-        if (!req.body.slug || typeof req.body.slug == undefined || typeof req.body.slug == null) {
-            erros.push({ texto: "Slug da categoria inválida" })
-        }
-
-        if (req.body.nome.length < 2) {
+            erros.push({ texto: "Nome da categoria inválido" })
+        } else if (req.body.nome.length < 2) {
             erros.push({ texto: "O nome da categoria muito pequeno" })
         }
 
+        if (!req.body.slug || typeof req.body.slug == undefined || typeof req.body.slug == null) {
+            erros.push({ texto: "Slug inválido" })
+        } else if (req.body.slug.length < 2) {
+            erros.push({ texto: "Slug muito pequeno" })
+        }
+
         if (erros.length > 0) {
-            res.render('admin/categorias', { erros: erros })
+            res.render('admin/addcategorias', { erros: erros })
         } else {
             const novaCategoria = {
                 nome: req.body.nome,
@@ -126,6 +128,58 @@ const Categoria = mongoose.model('categorias')
         })
     }))
 
+    router.post('/postagens/nova', ((req, res) => {
+        var erros = []
+
+        if (!req.body.titulo || typeof req.body.titulo == undefined || typeof req.body.titulo == null) {
+            erros.push({ texto: "Nome inválido" })
+        } else if (req.body.titulo.length < 2) {
+            erros.push({ texto: "Título da postagem muito pequeno" })
+        }
+
+        if (!req.body.slug || typeof req.body.slug == undefined || typeof req.body.slug == null) {
+            erros.push({ texto: "Slug inválido" })
+        } else if (req.body.slug.length < 2) {
+            erros.push({ texto: "Slug muito pequeno" })
+        }
+
+        if (!req.body.conteudo || typeof req.body.conteudo == undefined || typeof req.body.conteudo == null) {
+            erros.push({ texto: "Conteúdo inválido" })
+        } else if (req.body.slug.length < 2) {
+            erros.push({ texto: "Conteúdo muito pequeno" })
+        }
+
+        if (!req.body.descricao || typeof req.body.descricao == undefined || typeof req.body.descricao == null) {
+            erros.push({ texto: "Descrição inválida" })
+        } else if (req.body.descricao.length < 2) {
+            erros.push({ texto: "Descrição muito pequena" })
+        }
+
+        if(req.body.categoria == '0'){
+            erros.push({texto: 'Não há categorias criadas'})
+        }
+        
+        if(erros.length > 0){
+            res.render('admin/addpostagens', {erros: erros})
+        } else {
+
+            const novaPostagem = {
+                titulo: req.body.titulo,
+                slug: req.body.slug,
+                descricao: req.body.descricao,
+                conteudo: req.body.conteudo,
+                categoria: req.body.categoria
+            }
+
+            new Postagem(novaPostagem).save().then(() => {
+                req.flash('success_msg', 'Postagem criada com sucesso')
+                res.redirect('/admin/postagens')
+            }).catch((erro) => {
+                req.flash('error_msg', 'Falha na criação da postagem')
+                res.redirect('/admin/postagens')
+            })
+        }
+    }))
 
 
 module.exports = router
