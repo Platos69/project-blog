@@ -60,7 +60,7 @@
     app.use('/admin', admin)
 
 //OUTROS
-const PORT = 8081
+const PORT = 40092
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta http://localhost:${PORT}`)
 })
